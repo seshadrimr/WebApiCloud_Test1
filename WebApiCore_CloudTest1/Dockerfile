@@ -18,7 +18,7 @@ FROM microsoft/dotnet:2.2-sdk-nanoserver-sac2016 AS build
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
-COPY *.sln .
+#COPY *.sln .
 COPY WebApiCore_CloudTest1/*.csproj ./WebApiCore_CloudTest1/
 RUN dotnet restore
 
