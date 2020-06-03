@@ -1,41 +1,29 @@
-#Depending on the operating system of the host machines(s) that will build or run the containers, the image specified in the FROM statement may need to be changed.
-#For more information, please see https://aka.ms/containercompat
-
 FROM microsoft/dotnet:2.2-aspnetcore-runtime-nanoserver-sac2016 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
 
-#FROM microsoft/dotnet:2.2-sdk-nanoserver-sac2016 AS build
-#WORKDIR /src
-#COPY ["WebApiCore_CloudTest1/WebApiCore_CloudTest1.csproj", "WebApiCore_CloudTest1/"]
-#RUN dotnet restore "WebApiCore_CloudTest1/WebApiCore_CloudTest1.csproj"
-#COPY . .
-#WORKDIR "/src/WebApiCore_CloudTest1"
-#RUN dotnet build "WebApiCore_CloudTest1.csproj" -c Release -o /app
 
 FROM microsoft/dotnet:2.2-sdk-nanoserver-sac2016 AS build
-WORKDIR /app
+WORKDIR /src
+COPY . paservice/
+RUN ls -la paservice
+RUN dotnet restore paservice/WebApiCore_CloudTest1/WebApiCore_CloudTest1.csproj
 
-# copy csproj and restore as distinct layers
-#COPY *.sln .
-COPY WebApiCore_CloudTest1/*.csproj ./WebApiCore_CloudTest1/
-RUN dotnet restore
+COPY . . 
 
-# copy everything else and build app
-COPY WebApiCore_CloudTest1/. ./WebApiCore_CloudTest1/
-WORKDIR /app/WebApiCore_CloudTest1
-RUN dotnet publish -c Release -o out
+WORKDIR /src/paservice
+RUN dotnet build WebApiCore_CloudTest1/WebApiCore_CloudTest1.csproj -c Release -o /app 
+
+FROM build AS publish
+RUN dotnet publish WebApiCore_CloudTest1/WebApiCore_CloudTest1.csproj -c Release -o /app 
 
 FROM base AS final
 WORKDIR /app
-COPY --from=build /app/WebApiCore_CloudTest1/out ./
-ENTRYPOINT ["dotnet", "WebApiCore_CloudTest1.dll"]
+COPY --from=publish /app .
 
-#FROM build AS publish
-#RUN dotnet publish "WebApiCore_CloudTest1.csproj" -c Release -o /app
-#
-#FROM base AS final
-#WORKDIR /app
-#COPY --from=publish /app .
-#ENTRYPOINT ["dotnet", "WebApiCore_CloudTest1.dll"]
+### Run Environment Variable
+ENV ASPNETCORE_ENVIRONMENT="production"
+### Kestrel Port Environment Variable
+ENV ASPNETCORE_URLS="http://*:80"
+##RUN dotnet WebApiCore_CloudTest1.dll
+EXPOSE 80/tcp
+ENTRYPOINT ["dotnet", "WebApiCore_CloudTest1.dll"]
