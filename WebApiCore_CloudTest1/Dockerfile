@@ -8,9 +8,9 @@ EXPOSE 443
 
 FROM microsoft/dotnet:2.2-sdk-nanoserver-sac2016 AS build
 WORKDIR /src
-COPY ["./WebApiCore_CloudTest1.csproj", "WebApiCore_CloudTest1/"]
-RUN dotnet restore "./WebApiCore_CloudTest1.csproj"
-COPY . .
+COPY *.WebApiCore_CloudTest1.csproj ./
+RUN dotnet restore
+COPY . ./
 WORKDIR "/src/WebApiCore_CloudTest1"
 RUN dotnet build "WebApiCore_CloudTest1.csproj" -c Release -o /app
 
