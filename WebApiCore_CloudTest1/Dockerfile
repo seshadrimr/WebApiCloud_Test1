@@ -6,18 +6,36 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM microsoft/dotnet:2.2-sdk-nanoserver-sac2016 AS build
-WORKDIR /src
-COPY *.WebApiCore_CloudTest1.csproj ./
-RUN dotnet restore
-COPY . ./
-WORKDIR "/src/WebApiCore_CloudTest1"
-RUN dotnet build "WebApiCore_CloudTest1.csproj" -c Release -o /app
+#FROM microsoft/dotnet:2.2-sdk-nanoserver-sac2016 AS build
+#WORKDIR /src
+#COPY ["WebApiCore_CloudTest1/WebApiCore_CloudTest1.csproj", "WebApiCore_CloudTest1/"]
+#RUN dotnet restore "WebApiCore_CloudTest1/WebApiCore_CloudTest1.csproj"
+#COPY . .
+#WORKDIR "/src/WebApiCore_CloudTest1"
+#RUN dotnet build "WebApiCore_CloudTest1.csproj" -c Release -o /app
 
-FROM build AS publish
-RUN dotnet publish "WebApiCore_CloudTest1.csproj" -c Release -o /app
+FROM microsoft/dotnet:2.2-sdk-nanoserver-sac2016 AS build
+WORKDIR /app
+
+# copy csproj and restore as distinct layers
+COPY *.sln .
+COPY WebApiCore_CloudTest1/*.csproj ./WebApiCore_CloudTest1/
+RUN dotnet restore
+
+# copy everything else and build app
+COPY WebApiCore_CloudTest1/. ./WebApiCore_CloudTest1/
+WORKDIR /app/WebApiCore_CloudTest1
+RUN dotnet publish -c Release -o out
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app .
+COPY --from=build /app/WebApiCore_CloudTest1/out ./
 ENTRYPOINT ["dotnet", "WebApiCore_CloudTest1.dll"]
+
+#FROM build AS publish
+#RUN dotnet publish "WebApiCore_CloudTest1.csproj" -c Release -o /app
+#
+#FROM base AS final
+#WORKDIR /app
+#COPY --from=publish /app .
+#ENTRYPOINT ["dotnet", "WebApiCore_CloudTest1.dll"]
