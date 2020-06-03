@@ -5,7 +5,7 @@ WORKDIR /app
 FROM microsoft/dotnet:2.2-sdk-nanoserver-sac2016 AS build
 WORKDIR /src
 COPY . paservice/
-RUN ls -la paservice
+#RUN ls -la paservice
 RUN dotnet restore paservice/WebApiCore_CloudTest1/WebApiCore_CloudTest1.csproj
 
 COPY . . 
