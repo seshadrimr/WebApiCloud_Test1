@@ -1,29 +1,13 @@
-FROM microsoft/dotnet:2.2-aspnetcore-runtime-nanoserver-sac2016 AS base
+FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build-env
 WORKDIR /app
-
-
-FROM microsoft/dotnet:2.2-sdk-nanoserver-sac2016 AS build
-WORKDIR /src
-COPY . paservice/
-#RUN ls -la paservice
-RUN dotnet restore paservice/WebApiCore_CloudTest1/WebApiCore_CloudTest1.csproj
-
-COPY . . 
-
-WORKDIR /src/paservice
-RUN dotnet build WebApiCore_CloudTest1/WebApiCore_CloudTest1.csproj -c Release -o /app 
-
-FROM build AS publish
-RUN dotnet publish WebApiCore_CloudTest1/WebApiCore_CloudTest1.csproj -c Release -o /app 
-
-FROM base AS final
+# Copy csproj and restore as distinct layers
+COPY *.csproj ./
+RUN dotnet restore
+# Copy everything else and build
+COPY . ./
+RUN dotnet publish -c Release -o out
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2
 WORKDIR /app
-COPY --from=publish /app .
-
-### Run Environment Variable
-ENV ASPNETCORE_ENVIRONMENT="production"
-### Kestrel Port Environment Variable
-ENV ASPNETCORE_URLS="http://*:80"
-##RUN dotnet WebApiCore_CloudTest1.dll
-EXPOSE 80/tcp
+COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "WebApiCore_CloudTest1.dll"]
