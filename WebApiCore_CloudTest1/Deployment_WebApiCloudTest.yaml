@@ -17,14 +17,14 @@ spec:
         ports:
         - containerPort: 8080
       imagePullSecrets:
-      - name: webapicloudtest1sec
+      - name: webapisec
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: WebApiCloudTest1
 spec:
-  loadBalancerIP: 52.172.38.178
+  #loadBalancerIP: 52.172.38.178
   type: LoadBalancer
   ports:
   - port: 80
