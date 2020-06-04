@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: WebApiCloudTest1-Deployment
+  labels:
+	app: WebApiCloudTest1
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: WebApiCloudTest1
+    spec:
+      containers:
+      - name: WebApiCloudTest1
+        image: seshacr.azurecr.io/webapicloudtestdockerimage:27
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: webapicloudtest1sec
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: WebApiCloudTest1
+spec:
+  loadBalancerIP: 52.172.38.178
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: WebApiCloudTest1
