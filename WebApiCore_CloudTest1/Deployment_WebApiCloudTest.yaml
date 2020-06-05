@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: WebApiCloudTest1-Deployment
+  name: webapicloudtest1-deployment
   labels:
     app: WebApiCloudTest1
 spec:
@@ -25,7 +25,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: WebApiCloudTest1
+  name: webapicloudtest1
 spec:
   type: LoadBalancer
   ports:
