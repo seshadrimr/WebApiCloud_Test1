@@ -15,7 +15,7 @@ spec:
         app: WebApiCloudTest1
     spec:
       containers:
-      - name: WebApiCloudTest1
+      - name: webapicloudtest1
         image: seshacr.azurecr.io/webapicloudtestdockerimage:27
         ports:
         - containerPort: 8080
