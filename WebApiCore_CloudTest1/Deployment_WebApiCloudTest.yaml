@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: WebApiCloudTest1-Deployment
   labels:
-	app: WebApiCloudTest1
+    app: WebApiCloudTest1
 spec:
   replicas: 1
   template:
@@ -24,7 +24,6 @@ kind: Service
 metadata:
   name: WebApiCloudTest1
 spec:
-  #loadBalancerIP: 52.172.38.178
   type: LoadBalancer
   ports:
   - port: 80
